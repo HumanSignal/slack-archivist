@@ -41,7 +41,7 @@ async function getNextPageOfWebAPIResults({
   cursor?: string;
 }): Promise<WebAPIPageError | WebAPIPageResult> {
   const payload = {
-    limit: 20,
+    limit: 200,
     cursor,
     ...query,
   };
