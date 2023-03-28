@@ -83,7 +83,7 @@ export class DiscourseAPI {
           })
           .then(({ data }) =>
             E.right({
-              url: `${this.config.url}t/${data.topic_slug}/${data.topic_id}`,
+              url: `${this.config.url}/${data.topic_slug}/${data.topic_id}`,
               baseURL: this.config.url,
               topic_slug: data.topic_slug,
               topic_id: data.topic_id,
