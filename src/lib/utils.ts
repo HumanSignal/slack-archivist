@@ -1,7 +1,8 @@
 export function removeBotnameTag(msg: string, botname: string) {
+  const botregex = /<@.*>/;
   const botnameTag = `<@${botname}>`;
-  return msg.includes(botnameTag)
-    ? msg.replace(botnameTag, "").trim()
+  return msg.match(botregex)
+    ? msg.replace(botregex, "").trim()
     : msg.trim();
 }
 
