@@ -6,9 +6,6 @@ on:
       image_version:
         required: true
         type: string
-      env_name:
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       image_version:
