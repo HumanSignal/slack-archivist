@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: 'recursive'
-          token: ${{ secrets.GIT_PAT }}
+          token: ${{ github.token }}
           ref: ${{ inputs.sha }}
           fetch-depth: 0
 
