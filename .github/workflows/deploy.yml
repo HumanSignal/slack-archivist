@@ -1,0 +1,47 @@
+name: "Deploy env"
+
+on:
+  workflow_call:
+    inputs:
+      image_version:
+        required: true
+        type: string
+      env_name:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      image_version:
+        description: 'Docker image version'
+        required: true
+        type: string
+
+env:
+  HELM_RELEASE_NAMESPACE: slack-archivist
+  AWS_EKS_CLUSTER_NAME: beta_qs_nonprod
+  IMAGE_NAME: heartexlabs/slack-archivist
+
+jobs:
+
+  deploy:
+    name: "Environment"
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: hmarr/debug-action@v2.1.0
+
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.0.0
+        with:
+          aws-access-key-id: ${{ secrets.EKS_DEVELOP_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.EKS_DEVELOP_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.EKS_DEVELOP_AWS_REGION }}
+
+      - name: Configure kubeconfig
+        run: aws eks --region ${{ vars.EKS_DEVELOP_AWS_REGION }} update-kubeconfig --name ${{ env.AWS_EKS_CLUSTER_NAME }}
+
+      - name: Upgrade
+        run: kubectl -n ${{ env.HELM_RELEASE_NAMESPACE }} set image deployment/slack-archivist slack-archivist=${{ env.IMAGE_NAME }}:{{ inputs.image_version }}

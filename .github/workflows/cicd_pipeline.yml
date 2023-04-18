@@ -1,0 +1,35 @@
+name: "CI/CD Pipeline"
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    name: "Build"
+    uses: heartexlabs/slack-archivist/.github/workflows/docker-build.yml@master
+    permissions:
+      contents: read
+      checks: write
+    with:
+      sha: ${{ github.event.pull_request.head.sha || github.event.after }}
+      branch_name: ${{ github.event.pull_request.head.ref || github.ref_name }}
+    secrets: inherit
+
+  deploy:
+    name: "Deploy"
+    uses: heartexlabs/slack-archivist/.github/workflows/deploy.yml@master
+    needs:
+      - build
+    permissions:
+      contents: read
+      deployments: write
+    with:
+      image_version: ${{ needs.build.outputs.image_version }}
+    secrets: inherit
