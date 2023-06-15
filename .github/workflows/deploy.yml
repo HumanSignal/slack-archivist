@@ -15,8 +15,9 @@ on:
 
 env:
   HELM_RELEASE_NAMESPACE: slack-archivist
-  AWS_EKS_CLUSTER_NAME: beta_qs_nonprod
-  IMAGE_NAME: heartexlabs/slack-archivist
+  IMAGE_NAME: "heartexlabs/slack-archivist"
+  AWS_EKS_REGION: "us-east-1"
+  AWS_EKS_CLUSTER_NAME: "dev-lse-eks-cluster"
 
 jobs:
 
@@ -30,15 +31,20 @@ jobs:
     steps:
       - uses: hmarr/debug-action@v2.1.0
 
-      - name: AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2.0.0
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.EKS_DEVELOP_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.EKS_DEVELOP_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.EKS_DEVELOP_AWS_REGION }}
+          role-to-assume: 'arn:aws:iam::726004645192:role/github-runner'
+          role-session-name: ${{ github.run_id }}
+          aws-region: ${{ env.AWS_EKS_REGION }}
 
       - name: Configure kubeconfig
-        run: aws eks --region ${{ vars.EKS_DEVELOP_AWS_REGION }} update-kubeconfig --name ${{ env.AWS_EKS_CLUSTER_NAME }}
+        shell: bash
+        run: |
+          aws eks update-kubeconfig \
+            --region '${{ env.AWS_EKS_REGION }}' \
+            --name '${{ env.AWS_EKS_CLUSTER_NAME }}' \
+            --alias '${{ env.AWS_EKS_CLUSTER_NAME }}'
 
       - name: Upgrade
-        run: kubectl -n ${{ env.HELM_RELEASE_NAMESPACE }} set image deployment/slack-archivist slack-archivist=${{ env.IMAGE_NAME }}:${{ inputs.image_version }}
+        run: kubectl -n '${{ env.HELM_RELEASE_NAMESPACE }}' set image deployment/slack-archivist slack-archivist=${{ env.IMAGE_NAME }}:${{ inputs.image_version }}
