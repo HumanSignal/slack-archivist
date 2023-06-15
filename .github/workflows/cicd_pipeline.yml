@@ -28,6 +28,7 @@ jobs:
     needs:
       - build
     permissions:
+      id-token: write
       contents: read
       deployments: write
     with:
