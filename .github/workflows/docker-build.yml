@@ -19,7 +19,7 @@ env:
   CACHE_NAME_PREFIX: v2
   NODE: '14'
   DOCKER_CLI_EXPERIMENTAL: enabled
-  IMAGE_NAME: heartexlabs/slack-archivist
+  IMAGE_NAME: "${{ vars.DOCKERHUB_ORG }}/slack-archivist"
   DOCKER_IMAGE_TAG_CHECK_NAME: "Docker image tag"
   DEVOPS_SLACK_GROUPID: 'S045TKH5031'
 
@@ -65,7 +65,7 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v2.1.0
         with:
-          username: heartexlabs
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push Docker image

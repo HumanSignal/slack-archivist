@@ -15,7 +15,7 @@ on:
 
 env:
   HELM_RELEASE_NAMESPACE: slack-archivist
-  IMAGE_NAME: "heartexlabs/slack-archivist"
+  IMAGE_NAME: "${{ vars.DOCKERHUB_ORG }}/slack-archivist"
   AWS_EKS_REGION: "us-east-1"
   AWS_EKS_CLUSTER_NAME: "dev-lse-eks-cluster"
 
